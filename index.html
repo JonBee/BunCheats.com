@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BunCheats.com</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+      iframe#player {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        position: fixed;
+      }
+
+      div.bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgb(236, 236, 236);
+        background: radial-gradient(
+          circle,
+          rgba(236, 236, 236, 1) 0%,
+          rgba(125, 125, 125, 1) 100%
+        );
+        pointer-events: none;
+        transition: transform 3s;
+      }
+      div.bg.moved {
+        transform: translateY(3000px) rotate(10deg);
+      }
+
+      @keyframes wobble {
+        0% {
+          top: calc(50% - 150px);
+        }
+        50% {
+          top: calc(50% - 160px);
+        }
+        100% {
+          top: calc(50% - 150px);
+        }
+      }
+
+      div.buncontain {
+        height: 300px;
+        margin: 0;
+        padding: 0;
+        position: fixed;
+        left: 0px;
+        right: 0;
+        top: calc(50% - 150px);
+        transition: left 4s, opacity 1s;
+        pointer-events: none;
+      }
+
+      div.buncontain.animated {
+        left: -3000px;
+        animation-name: wobble;
+        animation-duration: 200ms;
+        animation-iteration-count: infinite;
+      }
+      div.buncontain.faded {
+        opacity: 0;
+      }
+      div.bun {
+        position: absolute;
+        width: 511px;
+        height: 300px;
+        margin: 0;
+        padding: 0;
+        background-image: url("img/bun-norm.png");
+        top: 0;
+        left: calc(50% - 250px);
+      }
+      div.bun:hover {
+        /* transform: rotate(-5deg); */
+        cursor: pointer;
+      }
+      div.bun.angry {
+        background-image: url("img/bun-laser.png");
+      }
+      div.laser {
+        position: absolute;
+        top: 0;
+        height: 300px;
+        width: 5000px;
+        background-image: url("img/laser.png");
+        background-repeat: repeat-x;
+        left: calc(50% + 261px);
+      }
+      div.laser.hidden {
+        display: none;
+      }
+
+      div.prevent-interact {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: red;
+        opacity: 0;
+      }
+      div.prevent-interact.disabled {
+        pointer-events: none;
+      }
+
+      div.fade {
+        background-color: black;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transition: opacity 2s;
+        pointer-events: none;
+      }
+      div.fade.faded {
+        opacity: 0;
+      }
+      div.fade.gone {
+        display: none;
+      }
+      div.test {
+        background-color: red;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="player"></div>
+    <script>
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("player", {
+          height: "390",
+          width: "640",
+          videoId: "6n3pFFPSlW4",
+          playerVars: { playsinline: 1, controls: 0, autoplay: 1 },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onStateChange
+          }
+        });
+      }
+
+      function onPlayerReady(event) {
+        document.getElementsByName("fade")[0].classList.add("faded");
+        setTimeout(() => {
+          document.getElementsByName("fade")[0].classList.add("gone");
+        }, 2100);
+        event.target.playVideo();
+      }
+
+      var playStarted = false;
+      function playVideo() {
+        if (!playStarted) {
+          playStarted = true;
+          player.playVideo();
+        }
+      }
+      var listeningForStart = true;
+      function onStateChange(event) {
+        //Check and see if playback has started, if so, animate bun
+        if (listeningForStart && event.data === YT.PlayerState.PLAYING) {
+          listeningForStart = false; //Only listen once
+          document.getElementsByName("bun")[0].classList.add("angry");
+          document.getElementsByName("bunlaser")[0].classList.remove("hidden");
+          document.getElementsByName("buncage")[0].classList.add("animated");
+          document.getElementsByName("bg")[0].classList.add("moved");
+          setTimeout(() => {
+            document.getElementsByName("buncage")[0].classList.add("faded");
+          }, 2500);
+        }
+      }
+    </script>
+    <div class="bg" name="bg"></div>
+    <div class="buncontain" name="buncage">
+      <div class="bun" name="bun"></div>
+      <div class="laser hidden" name="bunlaser"></div>
+    </div>
+    <div class="prevent-interact" name="interact" onclick="playVideo();"></div>
+    <div class="fade" name="fade"></div>
+  </body>
+</html>
+
+<!-- I apologize for how terrible this code is. -Jon -->
